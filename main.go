@@ -36,6 +36,10 @@ func main() {
 	var err error
 	switch os.Getenv(RUNTIMETYPE) {
 	case RUNVIDEOSERVICE:
+		if os.Getenv(YTBDAPI) == "" {
+			err = errors.New(YTBDAPI + " Can not be Empty!")
+			break
+		}
 		port := os.Getenv(RUNPORT)
 		if port == "" {
 			err = errors.New(RUNPORT + " Can not be Empty!")
@@ -67,10 +71,6 @@ func main() {
 func checkENV() (bool, string) {
 	if os.Getenv(RUNTIMETYPE) == "" {
 		return false, RUNTIMETYPE
-	}
-
-	if os.Getenv(YTBDAPI) == "" {
-		return false, YTBDAPI
 	}
 
 	if os.Getenv(RUNPORT) == "" {

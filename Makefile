@@ -13,3 +13,8 @@ build:
 
 run: build
 	@./canon
+
+release: *.go db/*.go extractor/*.go runtime/*.go util/*.go
+	GOOS=linux GOARCH=amd64 go build -ldflags "-X main._VERSION_=$(shell date +%Y%m%d)" -a -o canon
+	docker build -t vikings/canon .
+	docker push vikings/canon
