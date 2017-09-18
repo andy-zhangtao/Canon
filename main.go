@@ -14,8 +14,10 @@ const (
 	RUNTIMETYPE = "CANON_RUNTIME"
 	// RUNPORT CANON运行端口
 	RUNPORT = "CANON_RUNTIME_PORT"
-	// RUNSERVICE 服务态, 负责提供视频API
-	RUNSERVICE = "CANON_RUNTIME_SERVICE"
+	// RUNVIDEOSERVICE 服务态, 负责提供视频API
+	RUNVIDEOSERVICE = "CANON_RUNTIME_VIDEO_SERVICE"
+	// RUNQUERYSERVICE 服务态, 负责提供视频查询服务
+	RUNQUERYSERVICE = "CANON_RUNTIME_QUERY_SERVICE"
 	// YTBDAPI youtube-dl APIendpoint
 	YTBDAPI = "CANON_YTBD_API"
 )
@@ -33,18 +35,27 @@ func main() {
 
 	var err error
 	switch os.Getenv(RUNTIMETYPE) {
-	case RUNSERVICE:
+	case RUNVIDEOSERVICE:
 		port := os.Getenv(RUNPORT)
 		if port == "" {
 			err = errors.New(RUNPORT + " Can not be Empty!")
 			break
 		}
-		rs := runtime.RunService{
+		rs := runtime.VideoService{
 			Port:   port,
 			YtbAPI: os.Getenv(YTBDAPI),
 		}
 		err = rs.Service()
-
+	case RUNQUERYSERVICE:
+		port := os.Getenv(RUNPORT)
+		if port == "" {
+			err = errors.New(RUNPORT + " Can not be Empty!")
+			break
+		}
+		rs := runtime.QueryService{
+			Port: port,
+		}
+		err = rs.Service()
 	}
 
 	if err != nil {
@@ -61,5 +72,10 @@ func checkENV() (bool, string) {
 	if os.Getenv(YTBDAPI) == "" {
 		return false, YTBDAPI
 	}
+
+	if os.Getenv(RUNPORT) == "" {
+		return false, RUNPORT
+	}
+
 	return true, ""
 }

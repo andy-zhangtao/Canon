@@ -21,7 +21,7 @@ const (
 )
 
 // GetVideoInfo 获取视频实际播放地址
-func (rs *RunService) GetVideoInfo(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func (rs *VideoService) GetVideoInfo(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	q := r.URL.Query()
 	url := q.Get("url")
 
