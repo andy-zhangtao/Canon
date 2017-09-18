@@ -29,6 +29,8 @@ type DB struct {
 	index string
 	// Ty 类型名称
 	Ty string
+	// Chanid 频道ID
+	Chanid string
 }
 
 // Check 检查是否满足DB运行条件
@@ -92,9 +94,11 @@ func returnElastic() (*elastic.Client, error) {
 // GetData 获取指定类型的视频数据
 func (d *DB) GetData() ([]vu.Video, error) {
 	var vs []vu.Video
+	termQuery := elastic.NewTermQuery("chanid", d.Chanid)
 	searchResult, err := d.client.Search().
 		Index(d.index).
 		Type(d.Ty).
+		Query(termQuery).
 		Sort("upload", false).
 		From(0).
 		Size(10).

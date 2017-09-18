@@ -36,6 +36,8 @@ func (q *QueryService) GetVideoList(w http.ResponseWriter, r *http.Request, p ht
 	}
 
 	q.ESClient.Ty = chanMap[channelID]
+	q.ESClient.Chanid = channelID
+
 	vs, err := q.ESClient.GetData()
 	if err != nil {
 		w.WriteHeader(ERROR)
