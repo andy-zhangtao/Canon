@@ -5,5 +5,5 @@ RUN apk update && \
     update-ca-certificates
     
 COPY canon /canon
-
+ADD README.md /readme.md
 CMD ["/canon"]
