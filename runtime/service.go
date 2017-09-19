@@ -14,12 +14,12 @@ import (
 const (
 	// APIV1 当前API版本
 	APIV1 = "/v1"
-
 	// GETVIDEOINFO 获取指定视频实际播放地址
 	GETVIDEOINFO = "/video/get"
-
 	// GETVIDEOLIST 获取指定频道的视频数据
 	GETVIDEOLIST = "/video/get/:chanid"
+	// GETRANDOMVIDEOLIST 获取指定频道的随机视频数据
+	GETRANDOMVIDEOLIST = "/video/random/get/:chanid"
 )
 
 // VideoService 提供视频地址查询服务
@@ -71,7 +71,7 @@ func (q *QueryService) Service() error {
 	router := httprouter.New()
 	router.GET(getAPIPath(""), _testConnect)
 	router.GET(getAPIPath(GETVIDEOLIST), q.GetVideoList)
-
+	router.GET(getAPIPath(GETRANDOMVIDEOLIST), q.GetRandomVideoList)
 	log.Fatal(http.ListenAndServe(":"+q.Port, router))
 	return nil
 }

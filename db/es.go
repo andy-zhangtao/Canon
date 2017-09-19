@@ -91,6 +91,53 @@ func returnElastic() (*elastic.Client, error) {
 	return client, nil
 }
 
+// GetRandomData 返回随机视频数据
+// 用于当前视频物料为空时
+func (d *DB) GetRandomData() ([]vu.Video, error) {
+	var vs []vu.Video
+	termQuery := elastic.NewTermQuery("chanid", d.Chanid)
+	q := elastic.NewFunctionScoreQuery().Query(termQuery).AddScoreFunc(elastic.NewRandomFunction()).Boost(5).MaxBoost(10).BoostMode("multiply")
+	searchResult, err := d.client.Search().
+		Index(d.index).
+		Type(d.Ty).
+		Query(q).
+		// Sort("upload", false).
+		From(0).
+		Size(10).
+		Pretty(true).
+		Do(d.ctx)
+	if err != nil {
+		return vs, errors.New("Search ElasticSearch Error. " + err.Error())
+	}
+
+	if searchResult.Hits.TotalHits > 0 {
+		for _, hit := range searchResult.Hits.Hits {
+			var v vu.Video
+			err := json.Unmarshal(*hit.Source, &v)
+			if err != nil {
+				return vs, err
+			}
+
+			vs = append(vs, v)
+		}
+	}
+
+	return vs, nil
+	// src, err := q.Source()
+	// if err != nil {
+	// 	return vs, errors.New("Get Random Video Failed! " + err.Error())
+	// }
+
+	// data, err := json.Marshal(src)
+	// if err != nil {
+	// 	return vs, errors.New("Parse Random Video Failed! " + err.Error())
+	// }
+
+	// fmt.Println(string(data))
+
+	// return vs, nil
+}
+
 // GetData 获取指定类型的视频数据
 func (d *DB) GetData() ([]vu.Video, error) {
 	var vs []vu.Video

@@ -27,10 +27,12 @@ Path|Description|Parameter|
 ----|-----------|---------|
 /video/get|获取指定视频的播放地址|Query Parameter: url(视频页面)|
 /video/get/:chanid|获取指定频道的视频列表|URLParameter: chanid(频道ID)|
+/video/random/get/:chanid|获取指定频道的随机列表|URLParameter: chanid(频道ID)|
 
 ### Channel ID List
 
 ID|Description|
+--|-----------|
 1001|社会百态|
 1002|社会趣闻|
 1003|身边感动|
