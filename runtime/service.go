@@ -17,7 +17,7 @@ const (
 	// GETVIDEOINFO 获取指定视频实际播放地址
 	GETVIDEOINFO = "/video/get"
 	// GETVIDEOLIST 获取指定频道的视频数据
-	GETVIDEOLIST = "/video/get/:chanid"
+	GETVIDEOLIST = "/video/get/:chanid/:time"
 	// GETRANDOMVIDEOLIST 获取指定频道的随机视频数据
 	GETRANDOMVIDEOLIST = "/video/random/get/:chanid"
 )

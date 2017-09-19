@@ -15,6 +15,7 @@ const (
 	CHANIDNOTEXIST = "this channel does not exist!"
 	QUERYVIDEOERR  = "get video list failed!"
 	PARSEERROR     = "parse object failed!"
+	TIMEEMPTY      = "timestamp cannot be empty!"
 )
 
 // GetVideoList 获取视频列表
@@ -24,6 +25,13 @@ func (q *QueryService) GetVideoList(w http.ResponseWriter, r *http.Request, p ht
 	if channelID == "" {
 		w.WriteHeader(ERROR)
 		fmt.Fprintf(w, CHANIDEMPTY)
+		return
+	}
+
+	timestamp := p.ByName("time")
+	if timestamp == "" {
+		w.WriteHeader(ERROR)
+		fmt.Fprintf(w, TIMEEMPTY)
 		return
 	}
 
@@ -37,8 +45,9 @@ func (q *QueryService) GetVideoList(w http.ResponseWriter, r *http.Request, p ht
 
 	q.ESClient.Ty = chanMap[channelID]
 	q.ESClient.Chanid = channelID
+	q.ESClient.TimeStamp = timestamp
 
-	vs, err := q.ESClient.GetData()
+	vs, err := q.ESClient.GetVideoRangeList()
 	if err != nil {
 		w.WriteHeader(ERROR)
 		log.Println(err.Error())

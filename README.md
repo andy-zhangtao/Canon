@@ -25,9 +25,9 @@ API PATH:
 
 Path|Description|Parameter|
 ----|-----------|---------|
-/video/get|获取指定视频的播放地址|Query Parameter: url(视频页面)|
-/video/get/:chanid|获取指定频道的视频列表|URLParameter: chanid(频道ID)|
-/video/random/get/:chanid|获取指定频道的随机列表|URLParameter: chanid(频道ID)|
+/video/get|获取指定视频的播放地址|Query Parameter:<br/><br/> url(视频原始页面)|
+/video/get/:chanid/:time|获取指定频道的视频列表|URLParameter:<br/><br/>   chanid(频道ID) <br/>  time(时间戳, 13位保留到毫秒)|
+/video/random/get/:chanid|获取指定频道的随机列表|URLParameter:<br/><br/> chanid(频道ID)|
 
 ### Channel ID List
 
