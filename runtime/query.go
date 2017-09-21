@@ -49,29 +49,24 @@ func (q *QueryService) GetVideoList(w http.ResponseWriter, r *http.Request, p ht
 	var vs []vu.Video
 	var err error
 
-	for {
-		if len(vs) >= 10 {
-			break
-		}
-		sc = source[util.GetRandom(len(source))]
-		q.ESClient.Ty = sc.Name
+	sc = source[util.GetRandom(len(source))]
+	q.ESClient.Ty = sc.Name
 
-		var ncid []string
-		for _, i := range sc.CID {
-			ncid = append(ncid, strconv.Itoa(i))
-		}
+	var ncid []string
+	for _, i := range sc.CID {
+		ncid = append(ncid, strconv.Itoa(i))
+	}
 
-		q.ESClient.Chanid = ncid
+	q.ESClient.Chanid = ncid
 
-		q.ESClient.TimeStamp = timestamp
+	q.ESClient.TimeStamp = timestamp
 
-		vs, err = q.ESClient.GetVideoRangeList()
-		if err != nil {
-			w.WriteHeader(ERROR)
-			log.Println(err.Error())
-			fmt.Fprintf(w, QUERYVIDEOERR)
-			return
-		}
+	vs, err = q.ESClient.GetVideoRangeList()
+	if err != nil {
+		w.WriteHeader(ERROR)
+		log.Println(err.Error())
+		fmt.Fprintf(w, QUERYVIDEOERR)
+		return
 	}
 
 	respon, err := json.Marshal(vs)
