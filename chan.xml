@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chaninfo>
+    <chan id="1001">
+        <source>
+            <name>cctv</name>
+            <cid>1001</cid>
+            <cid>1003</cid>
+            <cid>1004</cid>
+            <cid>1005</cid>
+        </source>
+        <source>
+            <name>douyu</name>
+            <cid>17</cid>
+        </source>
+        <source>
+            <name>bilbil</name>
+            <cid>21</cid>
+            <cid>174</cid>
+        </source>
+        <source>
+            <name>huajiao</name>
+            <cid>0</cid>
+            <cid>174</cid>
+        </source>
+        <source>
+            <name>iqiyi</name>
+            <cid>3</cid>
+        </source>
+    </chan>
+    <chan id="1002">
+        <source>
+            <name>cctv</name>
+            <cid>1002</cid>
+        </source>
+        <source>
+            <name>bilbil</name>
+            <cid>138</cid>
+        </source>
+        <source>
+            <name>56.com</name>
+            <cid>618</cid>
+            <cid>619</cid>
+        </source>
+        <source>
+            <name>iqiyi</name>
+            <cid>0</cid>
+            <cid>2</cid>
+        </source>
+    </chan>
+    <chan id="1003">
+        <source>
+            <name>bilbil</name>
+            <cid>75</cid>
+            <cid>76</cid>
+            <cid>161</cid>
+            <cid>162</cid>
+        </source>
+        <source>
+            <name>56.com</name>
+            <cid>617</cid>
+        </source>
+    </chan>
+    <chan id="1004">
+        <source>
+            <name>douyu</name>
+            <cid>18</cid>
+        </source>
+        <source>
+            <name>bilbil</name>
+            <cid>163</cid>
+        </source>
+    </chan>
+    <chan id="1005">
+        <source>
+            <name>douyu</name>
+            <cid>26</cid>
+            <cid>1</cid>
+        </source>
+        <source>
+            <name>bilbil</name>
+            <cid>175</cid>
+        </source>
+        <source>
+            <name>56.com</name>
+            <cid>618</cid>
+        </source>
+    </chan>
+    <chan id="1006">
+       <source>
+            <name>douyu</name>
+            <cid>27</cid>
+            <cid>30</cid>
+        </source> 
+        <source>
+            <name>iqiyi</name>
+            <cid>1</cid>
+        </source> 
+    </chan>
+</chaninfo>

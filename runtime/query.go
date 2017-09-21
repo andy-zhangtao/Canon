@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/andy-zhangtao/Canon/util"
 	"github.com/julienschmidt/httprouter"
@@ -35,16 +36,24 @@ func (q *QueryService) GetVideoList(w http.ResponseWriter, r *http.Request, p ht
 		return
 	}
 
-	chanMap := util.MakeChanMap()
-
-	if chanMap[channelID] == "" {
+	// chanMap := util.MakeChanMap()
+	source := q.ChanMap[channelID]
+	if source == nil {
 		w.WriteHeader(ERROR)
 		fmt.Fprintf(w, CHANIDNOTEXIST)
 		return
 	}
 
-	q.ESClient.Ty = chanMap[channelID]
-	q.ESClient.Chanid = channelID
+	sc := source[util.GetRandom(len(source))]
+	q.ESClient.Ty = sc.Name
+
+	var ncid []string
+	for _, i := range sc.CID {
+		ncid = append(ncid, strconv.Itoa(i))
+	}
+
+	q.ESClient.Chanid = ncid
+
 	q.ESClient.TimeStamp = timestamp
 
 	vs, err := q.ESClient.GetVideoRangeList()
@@ -79,16 +88,30 @@ func (q *QueryService) GetRandomVideoList(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	chanMap := util.MakeChanMap()
+	// chanMap, err := util.MakeChanMap()
+	// if err != nil {
+	// 	w.WriteHeader(ERROR)
+	// 	fmt.Fprintf(w, CHANIDEMPTY)
+	// 	return
+	// }
 
-	if chanMap[channelID] == "" {
+	source := q.ChanMap[channelID]
+	if source == nil {
 		w.WriteHeader(ERROR)
 		fmt.Fprintf(w, CHANIDNOTEXIST)
 		return
 	}
 
-	q.ESClient.Ty = chanMap[channelID]
-	q.ESClient.Chanid = channelID
+	sc := source[util.GetRandom(len(source))]
+
+	q.ESClient.Ty = q.ChanMap[channelID][0].Name
+	var ncid []string
+
+	for _, i := range sc.CID {
+		ncid = append(ncid, strconv.Itoa(i))
+	}
+
+	q.ESClient.Chanid = ncid
 
 	vs, err := q.ESClient.GetRandomData()
 	if err != nil {

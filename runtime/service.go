@@ -32,6 +32,7 @@ type VideoService struct {
 type QueryService struct {
 	Port     string
 	ESClient *db.DB
+	ChanMap  map[string][]util.ChanSource
 }
 
 // Service 提供RestApi服务
@@ -66,6 +67,11 @@ func (q *QueryService) Service() error {
 	q.ESClient, err = db.GetDB()
 	if err != nil {
 		return errors.New("Get ES Client Failed! " + err.Error())
+	}
+
+	q.ChanMap, err = util.MakeChanMap()
+	if err != nil {
+		return errors.New("Parse Channel Xml Failed! " + err.Error())
 	}
 
 	router := httprouter.New()

@@ -12,6 +12,7 @@ env|value|usage|
 CANON_RUNTIME|Canon 运行状态|* <br/> CANON_RUNTIME_VIDEO_SERVICE:对外提供视频转换RestAPI <br/> CANON_RUNTIME_QUERY_SERVICE:对外提供视频查询服务|
 CANON_RUNTIME_PORT|Canon 监听端口|当CANON_RUNTIME为CANON_RUNTIME_VIDEO_SERVICE时必填|
 CANON_YTBD_API|Youtube-dl Endpoint|* |
+CANON_CHAN_XML|频道数据配置文件|如果为空，则使用默认的配置数据|
 
 ### API List
 
@@ -33,8 +34,9 @@ Path|Description|Parameter|
 
 ID|Description|
 --|-----------|
-1001|社会百态|
-1002|社会趣闻|
-1003|身边感动|
-1004|健康讲堂|
-1005|时事新闻|
+1001|百态视频|
+1002|搞笑视频|
+1003|发现探索|
+1004|体育视频|
+1005|音乐配音|
+1006|娱乐现场|
