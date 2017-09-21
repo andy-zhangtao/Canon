@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/andy-zhangtao/Canon/util"
+	vu "github.com/andy-zhangtao/videocrawler/util"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -44,24 +45,33 @@ func (q *QueryService) GetVideoList(w http.ResponseWriter, r *http.Request, p ht
 		return
 	}
 
-	sc := source[util.GetRandom(len(source))]
-	q.ESClient.Ty = sc.Name
+	var sc util.ChanSource
+	var vs []vu.Video
+	var err error
 
-	var ncid []string
-	for _, i := range sc.CID {
-		ncid = append(ncid, strconv.Itoa(i))
-	}
+	for {
+		if len(vs) >= 10 {
+			break
+		}
+		sc = source[util.GetRandom(len(source))]
+		q.ESClient.Ty = sc.Name
 
-	q.ESClient.Chanid = ncid
+		var ncid []string
+		for _, i := range sc.CID {
+			ncid = append(ncid, strconv.Itoa(i))
+		}
 
-	q.ESClient.TimeStamp = timestamp
+		q.ESClient.Chanid = ncid
 
-	vs, err := q.ESClient.GetVideoRangeList()
-	if err != nil {
-		w.WriteHeader(ERROR)
-		log.Println(err.Error())
-		fmt.Fprintf(w, QUERYVIDEOERR)
-		return
+		q.ESClient.TimeStamp = timestamp
+
+		vs, err = q.ESClient.GetVideoRangeList()
+		if err != nil {
+			w.WriteHeader(ERROR)
+			log.Println(err.Error())
+			fmt.Fprintf(w, QUERYVIDEOERR)
+			return
+		}
 	}
 
 	respon, err := json.Marshal(vs)
@@ -88,13 +98,6 @@ func (q *QueryService) GetRandomVideoList(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// chanMap, err := util.MakeChanMap()
-	// if err != nil {
-	// 	w.WriteHeader(ERROR)
-	// 	fmt.Fprintf(w, CHANIDEMPTY)
-	// 	return
-	// }
-
 	source := q.ChanMap[channelID]
 	if source == nil {
 		w.WriteHeader(ERROR)
@@ -102,23 +105,32 @@ func (q *QueryService) GetRandomVideoList(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	sc := source[util.GetRandom(len(source))]
+	var sc util.ChanSource
+	var vs []vu.Video
+	var err error
 
-	q.ESClient.Ty = q.ChanMap[channelID][0].Name
-	var ncid []string
+	for {
+		if len(vs) >= 10 {
+			break
+		}
+		sc = source[util.GetRandom(len(source))]
 
-	for _, i := range sc.CID {
-		ncid = append(ncid, strconv.Itoa(i))
-	}
+		q.ESClient.Ty = q.ChanMap[channelID][0].Name
+		var ncid []string
 
-	q.ESClient.Chanid = ncid
+		for _, i := range sc.CID {
+			ncid = append(ncid, strconv.Itoa(i))
+		}
 
-	vs, err := q.ESClient.GetRandomData()
-	if err != nil {
-		w.WriteHeader(ERROR)
-		log.Println(err.Error())
-		fmt.Fprintf(w, QUERYVIDEOERR)
-		return
+		q.ESClient.Chanid = ncid
+
+		vs, err = q.ESClient.GetRandomData()
+		if err != nil {
+			w.WriteHeader(ERROR)
+			log.Println(err.Error())
+			fmt.Fprintf(w, QUERYVIDEOERR)
+			return
+		}
 	}
 
 	respon, err := json.Marshal(vs)
