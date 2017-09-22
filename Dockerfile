@@ -6,5 +6,5 @@ RUN apk update && \
     
 COPY canon /canon
 ADD README.md /readme.md
-ADD chan.xml /chan.xml
+# ADD chan.xml /chan.xml
 CMD ["/canon"]
