@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/andy-zhangtao/Canon/util"
+	"github.com/andy-zhangtao/crawlerparam/v1"
 	vu "github.com/andy-zhangtao/videocrawler/util"
 	"github.com/julienschmidt/httprouter"
 )
@@ -45,7 +46,7 @@ func (q *QueryService) GetVideoList(w http.ResponseWriter, r *http.Request, p ht
 		return
 	}
 
-	var sc util.ChanSource
+	var sc v1.ChanSource
 	var vs []vu.Video
 	var err error
 
@@ -100,7 +101,7 @@ func (q *QueryService) GetRandomVideoList(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	var sc util.ChanSource
+	var sc v1.ChanSource
 	var vs []vu.Video
 	var err error
 

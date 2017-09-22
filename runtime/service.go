@@ -3,11 +3,13 @@ package runtime
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 
 	"github.com/andy-zhangtao/Canon/db"
 	"github.com/andy-zhangtao/Canon/util"
+	"github.com/andy-zhangtao/crawlerparam/v1"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -20,6 +22,8 @@ const (
 	GETVIDEOLIST = "/video/get/:chanid/:time"
 	// GETRANDOMVIDEOLIST 获取指定频道的随机视频数据
 	GETRANDOMVIDEOLIST = "/video/random/get/:chanid"
+	// SYNCPARAM 同步频道码参数
+	SYNCPARAM = "/sync/param"
 )
 
 // VideoService 提供视频地址查询服务
@@ -32,7 +36,7 @@ type VideoService struct {
 type QueryService struct {
 	Port     string
 	ESClient *db.DB
-	ChanMap  map[string][]util.ChanSource
+	ChanMap  map[string][]v1.ChanSource
 }
 
 // Service 提供RestApi服务
@@ -47,6 +51,24 @@ func (v *VideoService) Service() error {
 
 func _testConnect(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	fmt.Fprintf(w, "My Name Is LiLei! "+util.GetVersion())
+	return
+}
+
+func _syncpara(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(ERROR)
+		log.Println(err.Error())
+		return
+	}
+
+	err = util.MakeChanMap(data)
+	if err != nil {
+		w.WriteHeader(ERROR)
+		log.Println(err.Error())
+		return
+	}
+
 	return
 }
 
@@ -69,13 +91,14 @@ func (q *QueryService) Service() error {
 		return errors.New("Get ES Client Failed! " + err.Error())
 	}
 
-	q.ChanMap, err = util.MakeChanMap()
+	q.ChanMap = util.ChanPara
 	if err != nil {
 		return errors.New("Parse Channel Xml Failed! " + err.Error())
 	}
 
 	router := httprouter.New()
 	router.GET(getAPIPath(""), _testConnect)
+	router.POST(getAPIPath(SYNCPARAM), _syncpara)
 	router.GET(getAPIPath(GETVIDEOLIST), q.GetVideoList)
 	router.GET(getAPIPath(GETRANDOMVIDEOLIST), q.GetRandomVideoList)
 	log.Fatal(http.ListenAndServe(":"+q.Port, router))
