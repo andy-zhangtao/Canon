@@ -96,34 +96,35 @@ func returnElastic() (*elastic.Client, error) {
 func (d *DB) GetVideoRangeList() ([]vu.Video, error) {
 	var vs []vu.Video
 
-	for _, cid := range d.Chanid {
-		q := elastic.NewBoolQuery()
-		q = q.Filter(elastic.NewTermQuery("chanid", cid)).Filter(elastic.NewRangeQuery("upload").Gt(d.TimeStamp).Lte("now"))
-		q = q.Boost(5)
+	q := elastic.NewBoolQuery()
+	q = q.Filter(elastic.NewRangeQuery("upload").Gt(d.TimeStamp).Lte("now"))
+	q = q.Boost(5)
 
-		searchResult, err := d.client.Search().
-			Index(d.index).
-			Type(d.Ty).
-			Query(q).
-			From(0).
-			Size(10).
-			Pretty(true).
-			Do(d.ctx)
-		if err != nil {
-			return vs, errors.New("Search ElasticSearch Error. " + err.Error())
-		}
-		if searchResult.Hits.TotalHits > 0 {
-			for _, hit := range searchResult.Hits.Hits {
-				var v vu.Video
-				err := json.Unmarshal(*hit.Source, &v)
-				if err != nil {
-					return vs, err
-				}
-
-				vs = append(vs, v)
+	searchResult, err := d.client.Search().
+		Index(d.index).
+		Type(d.Ty).
+		Query(q).
+		From(0).
+		Size(10).
+		Pretty(true).
+		Do(d.ctx)
+	if err != nil {
+		return vs, errors.New("Search ElasticSearch Error. " + err.Error())
+	}
+	if searchResult.Hits.TotalHits > 0 {
+		for _, hit := range searchResult.Hits.Hits {
+			var v vu.Video
+			err := json.Unmarshal(*hit.Source, &v)
+			if err != nil {
+				return vs, err
 			}
+
+			vs = append(vs, v)
 		}
 	}
+	// for _, cid := range d.Chanid {
+
+	// }
 
 	return vs, nil
 }
@@ -132,35 +133,34 @@ func (d *DB) GetVideoRangeList() ([]vu.Video, error) {
 // 用于当前视频物料为空时
 func (d *DB) GetRandomData() ([]vu.Video, error) {
 	var vs []vu.Video
-
-	for _, cid := range d.Chanid {
-		termQuery := elastic.NewTermQuery("chanid", cid)
-		q := elastic.NewFunctionScoreQuery().Query(termQuery).AddScoreFunc(elastic.NewRandomFunction()).Boost(5).MaxBoost(10).BoostMode("multiply")
-		searchResult, err := d.client.Search().
-			Index(d.index).
-			Type(d.Ty).
-			Query(q).
-			From(0).
-			Size(10).
-			Pretty(true).
-			Do(d.ctx)
-		if err != nil {
-			return vs, errors.New("Search ElasticSearch Error. " + err.Error())
-		}
-
-		if searchResult.Hits.TotalHits > 0 {
-			for _, hit := range searchResult.Hits.Hits {
-				var v vu.Video
-				err := json.Unmarshal(*hit.Source, &v)
-				if err != nil {
-					return vs, err
-				}
-
-				vs = append(vs, v)
-			}
-		}
-
+	q := elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewRandomFunction()).Boost(5).MaxBoost(10).BoostMode("multiply")
+	searchResult, err := d.client.Search().
+		Index(d.index).
+		Type(d.Ty).
+		Query(q).
+		From(0).
+		Size(10).
+		Pretty(true).
+		Do(d.ctx)
+	if err != nil {
+		return vs, errors.New("Search ElasticSearch Error. " + err.Error())
 	}
+
+	if searchResult.Hits.TotalHits > 0 {
+		for _, hit := range searchResult.Hits.Hits {
+			var v vu.Video
+			err := json.Unmarshal(*hit.Source, &v)
+			if err != nil {
+				return vs, err
+			}
+
+			vs = append(vs, v)
+		}
+	}
+	// for _, cid := range d.Chanid {
+	// 	// termQuery := elastic.NewTermQuery("chanid", cid)
+
+	// }
 
 	return vs, nil
 }
