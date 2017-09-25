@@ -31,11 +31,4 @@ Path|Description|Parameter|
 
 ### Channel ID List
 
-ID|Description|
---|-----------|
-1001|百态视频|
-1002|搞笑视频|
-1003|发现探索|
-1004|体育视频|
-1005|音乐配音|
-1006|娱乐现场|
+[点击查看](https://bitbucket.org/andy-zhang/bado/wiki/Channel)
