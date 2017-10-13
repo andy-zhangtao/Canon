@@ -11,6 +11,7 @@ import (
 	"github.com/andy-zhangtao/Canon/util"
 	"github.com/andy-zhangtao/crawlerparam/v1"
 	"github.com/julienschmidt/httprouter"
+	"github.com/rs/cors"
 )
 
 const (
@@ -45,7 +46,10 @@ func (v *VideoService) Service() error {
 	router.GET(getAPIPath(""), _testConnect)
 	router.GET(getAPIPath(GETVIDEOINFO), v.GetVideoInfo)
 
-	log.Fatal(http.ListenAndServe(":"+v.Port, router))
+	// log.Fatal(http.ListenAndServe(":"+v.Port, router))
+	handler := cors.Default().Handler(router)
+	log.Fatal(http.ListenAndServe(":"+v.Port, handler))
+
 	return nil
 }
 
@@ -101,6 +105,8 @@ func (q *QueryService) Service() error {
 	router.POST(getAPIPath(SYNCPARAM), _syncpara)
 	router.GET(getAPIPath(GETVIDEOLIST), q.GetVideoList)
 	router.GET(getAPIPath(GETRANDOMVIDEOLIST), q.GetRandomVideoList)
-	log.Fatal(http.ListenAndServe(":"+q.Port, router))
+	// log.Fatal(http.ListenAndServe(":"+q.Port, router))
+	handler := cors.Default().Handler(router)
+	log.Fatal(http.ListenAndServe(":"+q.Port, handler))
 	return nil
 }
