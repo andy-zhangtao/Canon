@@ -174,7 +174,8 @@ func (q *QueryService) GetVideoInfo(w http.ResponseWriter, r *http.Request, p ht
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, string(respon))
+	//fmt.Fprintf(w, string(respon))
+	w.Write(respon)
 	return
 }
 
@@ -210,6 +211,7 @@ func (q *QueryService) GetCZVideoInfo(w http.ResponseWriter, r *http.Request, p 
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, string(respon))
+	//fmt.Fprintf(w, string(respon))
+	w.Write(respon)
 	return
 }
