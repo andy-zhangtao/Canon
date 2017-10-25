@@ -17,7 +17,7 @@ const (
 	// INDEX ES索引名称
 	INDEX           = vu.INDEX
 	CANON_ES_HOME   = "CANON_ES_HOME"
-	CANONR_ES_USER  = "CANONR_ES_USER"
+	CANON_ES_USER  = "CANON_ES_USER"
 	CANON_ES_PASSWD = "CANON_ES_PASSWD"
 )
 
@@ -40,8 +40,8 @@ func Check() (bool, string) {
 		return false, CANON_ES_HOME
 	}
 
-	if os.Getenv(CANONR_ES_USER) == "" {
-		return false, CANONR_ES_USER
+	if os.Getenv(CANON_ES_USER) == "" {
+		return false, CANON_ES_USER
 	}
 
 	if os.Getenv(CANON_ES_PASSWD) == "" {
@@ -71,7 +71,7 @@ func returnElastic() (*elastic.Client, error) {
 		return nil, errors.New(util.EsEmpty)
 	}
 
-	EsUser := os.Getenv("CANONR_ES_USER")
+	EsUser := os.Getenv("CANON_ES_USER")
 	EsPasswd := os.Getenv("CANON_ES_PASSWD")
 
 	// ctx := context.TODO()
@@ -118,7 +118,7 @@ func (d *DB) GetVideoRangeList() ([]vu.Video, error) {
 			if err != nil {
 				return vs, err
 			}
-
+			v.ID = hit.Id
 			vs = append(vs, v)
 		}
 	}
