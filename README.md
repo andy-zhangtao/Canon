@@ -29,6 +29,7 @@ Path|Description|Parameter|
 /video/get/:chanid/:time|获取指定频道的视频列表|URLParameter:<br/><br/>   chanid(频道ID) <br/>  time(时间戳, 13位保留到毫秒)|
 /video/random/get/:chanid|获取指定频道的随机列表|URLParameter:<br/><br/> chanid(频道ID)|
 /video/info/:id | 获取指定ID视频信息|URLParameter:<br/><br/> id(视频ID)|
+/video/czinfo/:id | 获取指定ID锤子视频信息|URLParameter:<br/><br/> id(视频ID)|
 
 ### Channel ID List
 

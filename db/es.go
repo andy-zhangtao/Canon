@@ -226,6 +226,31 @@ func (d *DB) GetInfo() (vu.Video, error) {
 	return vs, nil
 }
 
+// GetCZInfo 获取指定ID的锤子视频数据
+func (d *DB) GetCZInfo() (vu.CZVideo, error) {
+	var vs vu.CZVideo
+	termQuery := elastic.NewTermQuery("_id", d.ID)
+	searchResult, err := d.client.Search().
+		Query(termQuery).
+		Pretty(true).
+		Do(d.ctx)
+	if err != nil {
+		return vs, errors.New("Search ElasticSearch By Id Error. "+err.Error())
+	}
+
+	if searchResult.Hits.TotalHits >0{
+		for _, hit := range searchResult.Hits.Hits{
+			err = json.Unmarshal(*hit.Source, &vs)
+			if err != nil{
+				return vs, err
+			}
+			break
+		}
+	}
+
+	return vs, nil
+}
+
 // // SaveData 保存视频数据到ElasticSearch中
 // // vo Video结构体
 // func (d *DB) SaveData(vo util.Video) error {

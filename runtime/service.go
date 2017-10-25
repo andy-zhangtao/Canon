@@ -25,6 +25,8 @@ const (
 	GETRANDOMVIDEOLIST = "/video/random/get/:chanid"
 	// GETVIDEOBYID 获取指定ID的视频信息
 	GETVIDEOBYID = "/video/info/:id"
+	// GETCZVIDEOBYID 获取指定ID的锤子视频信息
+	GETCZVIDEOBYID = "/video/czinfo/:id"
 	// SYNCPARAM 同步频道码参数
 	SYNCPARAM = "/sync/param"
 )
@@ -108,6 +110,7 @@ func (q *QueryService) Service() error {
 	router.GET(getAPIPath(GETVIDEOLIST), q.GetVideoList)
 	router.GET(getAPIPath(GETRANDOMVIDEOLIST), q.GetRandomVideoList)
 	router.GET(getAPIPath(GETVIDEOBYID), q.GetVideoInfo)
+	router.GET(getAPIPath(GETCZVIDEOBYID), q.GetCZVideoInfo)
 	handler := cors.Default().Handler(router)
 	log.Fatal(http.ListenAndServe(":"+q.Port, handler))
 	return nil
