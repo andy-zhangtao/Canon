@@ -10,14 +10,14 @@ import (
 	"github.com/andy-zhangtao/bado/util"
 	vu "github.com/andy-zhangtao/videocrawler/util"
 
-	elastic "gopkg.in/olivere/elastic.v5"
+	"gopkg.in/olivere/elastic.v5"
 )
 
 const (
 	// INDEX ES索引名称
 	INDEX           = vu.INDEX
 	CANON_ES_HOME   = "CANON_ES_HOME"
-	CANON_ES_USER  = "CANON_ES_USER"
+	CANON_ES_USER   = "CANON_ES_USER"
 	CANON_ES_PASSWD = "CANON_ES_PASSWD"
 )
 
@@ -32,6 +32,8 @@ type DB struct {
 	// Chanid 频道ID
 	Chanid    []string
 	TimeStamp string
+	// ID 视频ID
+	ID string
 }
 
 // Check 检查是否满足DB运行条件
@@ -191,6 +193,33 @@ func (d *DB) GetData() ([]vu.Video, error) {
 			}
 
 			vs = append(vs, v)
+		}
+	}
+
+	return vs, nil
+}
+
+// GetInfo 获取指定ID的视频数据
+func (d *DB) GetInfo() (vu.Video, error) {
+	var vs vu.Video
+	termQuery := elastic.NewTermQuery("_id", d.ID)
+	searchResult, err := d.client.Search().
+		Index(d.index).
+		//Type(d.Ty).
+		Query(termQuery).
+		Pretty(true).
+		Do(d.ctx)
+	if err != nil {
+		return vs, errors.New("Search ElasticSearch By Id Error. "+err.Error())
+	}
+
+	if searchResult.Hits.TotalHits >0{
+		for _, hit := range searchResult.Hits.Hits{
+			err = json.Unmarshal(*hit.Source, &vs)
+			if err != nil{
+				return vs, err
+			}
+			break
 		}
 	}
 

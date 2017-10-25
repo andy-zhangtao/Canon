@@ -14,6 +14,7 @@ import (
 
 const (
 	CHANIDEMPTY    = "channel id cannot be empty!"
+	IDEMPTY = "video id cannot be empty!"
 	CHANIDNOTEXIST = "this channel does not exist!"
 	QUERYVIDEOERR  = "get video list failed!"
 	PARSEERROR     = "parse object failed!"
@@ -126,6 +127,52 @@ func (q *QueryService) GetRandomVideoList(w http.ResponseWriter, r *http.Request
 			fmt.Fprintf(w, QUERYVIDEOERR)
 			return
 		}
+	}
+
+	respon, err := json.Marshal(vs)
+	if err != nil {
+		w.WriteHeader(ERROR)
+		log.Println(err.Error())
+		fmt.Fprintf(w, PARSEERROR)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, string(respon))
+	return
+}
+
+// GetVideoInfo 获取视频信息
+// id 视频id值
+func (q *QueryService) GetVideoInfo(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	ID := p.ByName("id")
+	if ID == "" {
+		w.WriteHeader(ERROR)
+		fmt.Fprintf(w, IDEMPTY)
+		return
+	}
+
+
+	//var sc v1.ChanSource
+	var vs vu.Video
+	var err error
+	//
+	//// sc = source[util.GetRandom(len(source))]
+	//
+	//
+	//var ncid []string
+	//for _, i := range sc.CID {
+	//	ncid = append(ncid, strconv.Itoa(i))
+	//}
+
+	q.ESClient.ID = ID
+
+	vs, err = q.ESClient.GetInfo()
+	if err != nil {
+		w.WriteHeader(ERROR)
+		log.Println(err.Error())
+		fmt.Fprintf(w, QUERYVIDEOERR)
+		return
 	}
 
 	respon, err := json.Marshal(vs)
