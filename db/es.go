@@ -277,6 +277,8 @@ func (d *DB) GetCZSimilVideo(index, keys string)([]vu.CZVideo, error){
 			if v.Name == keys{
 				continue
 			}
+			v.ID = hit.Id
+			v.URL = "" //URL此时没有必要传过去
 			vs = append(vs, v)
 		}
 	}
