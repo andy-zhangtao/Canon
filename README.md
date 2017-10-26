@@ -30,6 +30,7 @@ Path|Description|Parameter|
 /video/random/get/:chanid|获取指定频道的随机列表|URLParameter:<br/><br/> chanid(频道ID)|
 /video/info/:id | 获取指定ID视频信息|URLParameter:<br/><br/> id(视频ID)|
 /video/czinfo/:id | 获取指定ID锤子视频信息|URLParameter:<br/><br/> id(视频ID)|
+/video/simila | 根据指定关键字查询指定Index中的信息| Query Parameter: <br/><br/> keys(关键字url编码) <br/><br/> index(index名称)||
 
 ### Channel ID List
 
