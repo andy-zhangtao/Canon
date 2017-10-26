@@ -251,6 +251,37 @@ func (d *DB) GetCZInfo() (vu.CZVideo, error) {
 	return vs, nil
 }
 
+// GetCZSimilVideo 获取相似视频数据
+// chuizi 和 idou 的数据结构不同,必须设置index
+func (d *DB) GetCZSimilVideo(index, keys string)([]vu.CZVideo, error){
+	var vs []vu.CZVideo
+	matchQuery := elastic.NewMatchQuery("keys",keys)
+	searchResult, err := d.client.Search().
+		Index(index).
+		Query(matchQuery).
+		From(0).
+		Size(15).
+		Pretty(true).
+		Do(d.ctx)
+	if err != nil {
+		return vs, errors.New("Search ElasticSearch By Id Error. "+err.Error())
+	}
+
+	if searchResult.Hits.TotalHits >0{
+		for _, hit := range searchResult.Hits.Hits{
+			var v vu.CZVideo
+			err = json.Unmarshal(*hit.Source, &v)
+			if err != nil{
+				return vs, err
+			}
+			if v.Name == keys{
+				continue
+			}
+			vs = append(vs, v)
+		}
+	}
+	return vs, nil
+}
 // // SaveData 保存视频数据到ElasticSearch中
 // // vo Video结构体
 // func (d *DB) SaveData(vo util.Video) error {

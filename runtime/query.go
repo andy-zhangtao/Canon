@@ -15,6 +15,8 @@ import (
 const (
 	CHANIDEMPTY    = "channel id cannot be empty!"
 	IDEMPTY = "video id cannot be empty!"
+	INDEXEMPTY = "index cannot be empty!"
+	KEYSEMPTY = "kyes cannot be empty!"
 	CHANIDNOTEXIST = "this channel does not exist!"
 	QUERYVIDEOERR  = "get video list failed!"
 	PARSEERROR     = "parse object failed!"
@@ -212,6 +214,49 @@ func (q *QueryService) GetCZVideoInfo(w http.ResponseWriter, r *http.Request, p 
 
 	w.Header().Set("Content-Type", "application/json")
 	//fmt.Fprintf(w, string(respon))
+	w.Write(respon)
+	return
+}
+
+// GetCZSimilVideoInfo 获取相似视频信息
+func (q *QueryService) GetCZSimilVideoInfo(w http.ResponseWriter, r *http.Request, p httprouter.Params){
+	qu := r.URL.Query()
+	keys := qu.Get("keys")
+	if keys == ""{
+		w.WriteHeader(ERROR)
+		fmt.Fprintf(w, KEYSEMPTY)
+		return
+	}
+
+	index := qu.Get("index")
+	if index == ""{
+		w.WriteHeader(ERROR)
+		fmt.Fprintf(w, INDEXEMPTY)
+		return
+	}
+
+	//log.Println(keys)
+	var vs []vu.CZVideo
+	var err error
+
+
+	vs, err = q.ESClient.GetCZSimilVideo(index,keys)
+	if err != nil {
+		w.WriteHeader(ERROR)
+		log.Println(err.Error())
+		fmt.Fprintf(w, QUERYVIDEOERR)
+		return
+	}
+
+	respon, err := json.Marshal(vs)
+	if err != nil {
+		w.WriteHeader(ERROR)
+		log.Println(err.Error())
+		fmt.Fprintf(w, PARSEERROR)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
 	w.Write(respon)
 	return
 }
