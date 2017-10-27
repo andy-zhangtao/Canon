@@ -1,6 +1,11 @@
 # Canon
 更新由videocrawler爬取到的视频url
 
+实现的功能如下:
+
+1. 根据视频源实际播放地址
+2. 从Idou和Chuizi中获取符合条件的视频数据
+
 ## How to use?
 
 ### ENV List
@@ -30,8 +35,8 @@ Path|Description|Parameter|
 /video/random/get/:chanid|获取指定频道的随机列表|URLParameter:<br/><br/> chanid(频道ID)|
 /video/info/:id | 获取指定ID视频信息|URLParameter:<br/><br/> id(视频ID)|
 /video/czinfo/:id | 获取指定ID锤子视频信息|URLParameter:<br/><br/> id(视频ID)|
-/video/simila | 根据指定关键字查询指定Index中的信息| Query Parameter: <br/><br/> keys(关键字url编码) <br/><br/> index(index名称)||
-
+/video/simila | 根据指定关键字查询指定Index中的信息| Query Parameter: <br/><br/> keys(关键字url编码) <br/><br/> index(index名称)|
+/video/url | 获取视频真实播放地址 | Query Parameter: <br/><br/> url(原地址)|
 ### Channel ID List
 
 [点击查看](https://bitbucket.org/andy-zhang/bado/wiki/Channel)

@@ -10,6 +10,8 @@ import (
 	"github.com/andy-zhangtao/crawlerparam/v1"
 	vu "github.com/andy-zhangtao/videocrawler/util"
 	"github.com/julienschmidt/httprouter"
+	"github.com/andy-zhangtao/Canon/utils"
+	"strings"
 )
 
 const (
@@ -17,6 +19,7 @@ const (
 	IDEMPTY = "video id cannot be empty!"
 	INDEXEMPTY = "index cannot be empty!"
 	KEYSEMPTY = "kyes cannot be empty!"
+	TYPESERROR = "type error!"
 	CHANIDNOTEXIST = "this channel does not exist!"
 	QUERYVIDEOERR  = "get video list failed!"
 	PARSEERROR     = "parse object failed!"
@@ -258,5 +261,43 @@ func (q *QueryService) GetCZSimilVideoInfo(w http.ResponseWriter, r *http.Reques
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(respon)
+	return
+}
+
+
+// GetVideoPlayURL 获取视频真实播放地址
+func (q *QueryService) GetVideoPlayURL(w http.ResponseWriter, r *http.Request, p httprouter.Params){
+	qu := r.URL.Query()
+	url := qu.Get("url")
+	if url == ""{
+		w.WriteHeader(ERROR)
+		fmt.Fprintf(w, URLEMPTY)
+		return
+	}
+
+	if strings.Contains(url,"snssdk.com"){
+	//	头条数据
+		vs, err := utils.TouTiao(url)
+		if err != nil{
+			w.WriteHeader(ERROR)
+			fmt.Fprintf(w, err.Error())
+			return
+		}
+
+		respon, err := json.Marshal(vs)
+		if err != nil {
+			w.WriteHeader(ERROR)
+			log.Println(err.Error())
+			fmt.Fprintf(w, PARSEERROR)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(respon)
+		return
+	}
+
+	w.WriteHeader(ERROR)
+	fmt.Fprintf(w, TYPESERROR)
 	return
 }
