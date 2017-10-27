@@ -57,3 +57,28 @@ type TouTiaoS_List struct{
 	Backup string `json:"backup_url_1"`
 }
 
+
+type UCResult struct{
+	Vtype string `json:"vtype"`
+	VURL string `json:"vurl"`
+	MainURL string `json:"main_url"`
+	BackupURL string `json:"backup_url"`
+}
+
+type UCStruct struct{
+	Message string `json:"message"`
+	Data UC_Data `json:"data"`
+}
+
+type UC_Data struct{
+	VideoList []UC_List `json:"videoList"`
+}
+
+type UC_List struct{
+	Format string `json:"format"`
+	Fragment []UC_Fragment `json:"fragment"`
+}
+
+type UC_Fragment struct{
+	Url string `json:"url"`
+}

@@ -31,16 +31,16 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"encoding/base64"
-	"log"
+	"net/url"
+	"fmt"
+	"github.com/pkg/errors"
 )
 
 // 根据不同视频源的编码规则,获取相对应的播放地址
 
-
-
 // TouTiao 头条规则
 // GET请求此url,会返回TouTiao对应的数据结构体。其中main_url 是经过base64编码的地址。 经过解码之后可以得到播放地址
-func TouTiao(url string) ([]TouTiaoResult, error){
+func TouTiao(url string) ([]TouTiaoResult, error) {
 
 	var tts TouTiaoStruct
 	var ttr []TouTiaoResult
@@ -60,33 +60,83 @@ func TouTiao(url string) ([]TouTiaoResult, error){
 	if err != nil {
 		return ttr, err
 	}
-	
+
 	err = json.Unmarshal(content, &tts)
 	if err != nil {
 		return ttr, err
 	}
 
-	for _, t := range tts.Data.ViedoList{
+	for _, t := range tts.Data.ViedoList {
 
 		data, err := base64.StdEncoding.DecodeString(t.Main)
-		if err != nil{
+		if err != nil {
 			data, err = base64.StdEncoding.DecodeString(t.Backup)
-			if err != nil{
+			if err != nil {
 				continue
 			}
 			ttr = append(ttr, TouTiaoResult{
-				Vtype:t.Vtype,
-				VURL:"backup_url",
-				BackupURL:string(data),
+				Vtype:     t.Vtype,
+				VURL:      "backup_url",
+				BackupURL: string(data),
 			})
 			continue
 		}
 		ttr = append(ttr, TouTiaoResult{
-			Vtype:t.Vtype,
-			VURL:"main_url",
-			MainURL:string(data),
+			Vtype:   t.Vtype,
+			VURL:    "main_url",
+			MainURL: string(data),
 		})
 	}
 
 	return ttr, nil
+}
+
+
+// UC UC规则
+// 取出pageUrl query参数，然后拼接在http://m.uczzd.cn/iflow/api/v1/article/video/parse?app=ucnews-iflow&pageUrl=？返回对应的数据
+func UC(requestURL string)([]UCResult, error){
+	var ucr []UCResult
+	m, err := url.ParseQuery(requestURL)
+	if err != nil{
+		return ucr, err
+	}
+
+	if m["original_url"] == nil {
+		return ucr, errors.New("Cannot find original_url in uc url")
+	}
+
+	requestURL = fmt.Sprintf("http://m.uczzd.cn/iflow/api/v1/article/video/parse?app=ucnews-iflow&pageUrl=%s",m["original_url"][0])
+
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", requestURL, nil)
+	if err != nil {
+		return ucr, err
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return ucr, err
+	}
+
+	content, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return ucr, err
+	}
+
+	var ucs UCStruct
+
+	err = json.Unmarshal(content, &ucs)
+	if err != nil {
+		return ucr, err
+	}
+
+	for _, u := range ucs.Data.VideoList{
+		ucr = append(ucr, UCResult{
+			Vtype:u.Format,
+			VURL:"main_url",
+			MainURL:u.Fragment[0].Url,
+		})
+	}
+
+	return ucr, nil
 }

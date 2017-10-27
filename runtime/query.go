@@ -297,6 +297,27 @@ func (q *QueryService) GetVideoPlayURL(w http.ResponseWriter, r *http.Request, p
 		return
 	}
 
+
+	if strings.Contains(url, "uczzd.cn"){
+		vs, err := utils.UC(url)
+		if err != nil{
+			w.WriteHeader(ERROR)
+			fmt.Fprintf(w, err.Error())
+			return
+		}
+
+		respon, err := json.Marshal(vs)
+		if err != nil {
+			w.WriteHeader(ERROR)
+			log.Println(err.Error())
+			fmt.Fprintf(w, PARSEERROR)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(respon)
+		return
+	}
 	w.WriteHeader(ERROR)
 	fmt.Fprintf(w, TYPESERROR)
 	return
