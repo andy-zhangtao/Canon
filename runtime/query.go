@@ -322,3 +322,52 @@ func (q *QueryService) GetVideoPlayURL(w http.ResponseWriter, r *http.Request, p
 	fmt.Fprintf(w, TYPESERROR)
 	return
 }
+
+// GetRandomVideoList 获取随机视频列表
+// 当前如果没有最新视频物料时，从库存中随机挑选10条视频返回给用户
+func (q *QueryService) GetCZRandomVideoList(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+
+	channelID := p.ByName("chanid")
+	if channelID == "" {
+		w.WriteHeader(ERROR)
+		fmt.Fprintf(w, CHANIDEMPTY)
+		return
+	}
+
+	var sc v1.ChanSource
+	var vs []vu.CZVideo
+	var err error
+
+	for {
+		if len(vs) >= 10 {
+			break
+		}
+
+		q.ESClient.Ty = channelID
+		var ncid []string
+
+		for _, i := range sc.CID {
+			ncid = append(ncid, strconv.Itoa(i))
+		}
+
+		vs, err = q.ESClient.GetCZRandomData("chuizivideo")
+		if err != nil {
+			w.WriteHeader(ERROR)
+			log.Println(err.Error())
+			fmt.Fprintf(w, QUERYVIDEOERR)
+			return
+		}
+	}
+
+	respon, err := json.Marshal(vs)
+	if err != nil {
+		w.WriteHeader(ERROR)
+		log.Println(err.Error())
+		fmt.Fprintf(w, PARSEERROR)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, string(respon))
+	return
+}

@@ -284,6 +284,38 @@ func (d *DB) GetCZSimilVideo(index, keys string)([]vu.CZVideo, error){
 	}
 	return vs, nil
 }
+
+// GetRandomData 返回随机视频数据
+// 用于当前视频物料为空时
+func (d *DB) GetCZRandomData(index string) ([]vu.CZVideo, error) {
+	var vs []vu.CZVideo
+	q := elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewRandomFunction()).Boost(5).MaxBoost(10).BoostMode("multiply")
+	searchResult, err := d.client.Search().
+		Index(index).
+		Type(d.Ty).
+		Query(q).
+		From(0).
+		Size(10).
+		Pretty(true).
+		Do(d.ctx)
+	if err != nil {
+		return vs, errors.New("Search ElasticSearch Error. " + err.Error())
+	}
+
+	if searchResult.Hits.TotalHits > 0 {
+		for _, hit := range searchResult.Hits.Hits {
+			var v vu.CZVideo
+			err := json.Unmarshal(*hit.Source, &v)
+			if err != nil {
+				return vs, err
+			}
+			v.ID = hit.Id
+			vs = append(vs, v)
+		}
+	}
+
+	return vs, nil
+}
 // // SaveData 保存视频数据到ElasticSearch中
 // // vo Video结构体
 // func (d *DB) SaveData(vo util.Video) error {

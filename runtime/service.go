@@ -23,6 +23,8 @@ const (
 	GETVIDEOLIST = "/video/get/:chanid/:time"
 	// GETRANDOMVIDEOLIST 获取指定频道的随机视频数据
 	GETRANDOMVIDEOLIST = "/video/random/get/:chanid"
+	// GETCZRANDOMVIDEOLIST 获取指定频道的随机视频数据
+	GETCZRANDOMVIDEOLIST = "/video/czrandom/get/:chanid"
 	// GETVIDEOBYID 获取指定ID的视频信息
 	GETVIDEOBYID = "/video/info/:id"
 	// GETCZVIDEOBYID 获取指定ID的锤子视频信息
@@ -112,6 +114,7 @@ func (q *QueryService) Service() error {
 	router.POST(getAPIPath(SYNCPARAM), _syncpara)
 	router.GET(getAPIPath(GETVIDEOLIST), q.GetVideoList)
 	router.GET(getAPIPath(GETRANDOMVIDEOLIST), q.GetRandomVideoList)
+	router.GET(getAPIPath(GETCZRANDOMVIDEOLIST), q.GetCZRandomVideoList)
 	router.GET(getAPIPath(GETVIDEOBYID), q.GetVideoInfo)
 	router.GET(getAPIPath(GETCZVIDEOBYID), q.GetCZVideoInfo)
 	router.GET(getAPIPath(GETCZSIMILVIDEOBYKEYS), q.GetCZSimilVideoInfo)
