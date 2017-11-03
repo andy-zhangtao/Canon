@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/andy-zhangtao/Canon/runtime"
-	"github.com/andy-zhangtao/Canon/util"
+	"github.com/andy-zhangtao/Canon/utils"
 )
 
 const (
@@ -25,8 +25,8 @@ const (
 var _VERSION_ = "unknown"
 
 func main() {
-	util.SetVersion(_VERSION_)
-	fmt.Println(util.GetVersion())
+	utils.SetVersion(_VERSION_)
+	fmt.Println(utils.GetVersion())
 
 	if ok, name := checkENV(); !ok {
 		fmt.Printf("[%s] can not be empty!", name)

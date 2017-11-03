@@ -8,7 +8,7 @@ import (
 	"net/http"
 
 	"github.com/andy-zhangtao/Canon/db"
-	"github.com/andy-zhangtao/Canon/util"
+	"github.com/andy-zhangtao/Canon/utils"
 	"github.com/andy-zhangtao/crawlerparam/v1"
 	"github.com/julienschmidt/httprouter"
 	"github.com/rs/cors"
@@ -63,7 +63,7 @@ func (v *VideoService) Service() error {
 }
 
 func _testConnect(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	fmt.Fprintf(w, "My Name Is LiLei! "+util.GetVersion())
+	fmt.Fprintf(w, "My Name Is LiLei! "+utils.GetVersion())
 	return
 }
 
@@ -75,7 +75,7 @@ func _syncpara(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		return
 	}
 
-	err = util.MakeChanMap(data)
+	err = utils.MakeChanMap(data)
 	if err != nil {
 		w.WriteHeader(ERROR)
 		log.Println(err.Error())
@@ -104,7 +104,7 @@ func (q *QueryService) Service() error {
 		return errors.New("Get ES Client Failed! " + err.Error())
 	}
 
-	q.ChanMap = util.ChanPara
+	q.ChanMap = utils.ChanPara
 	if err != nil {
 		return errors.New("Parse Channel Xml Failed! " + err.Error())
 	}

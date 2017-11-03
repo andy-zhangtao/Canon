@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/andy-zhangtao/bado/util"
 	vu "github.com/andy-zhangtao/videocrawler/util"
 
 	"gopkg.in/olivere/elastic.v5"
@@ -19,6 +18,8 @@ const (
 	CANON_ES_HOME   = "CANON_ES_HOME"
 	CANON_ES_USER   = "CANON_ES_USER"
 	CANON_ES_PASSWD = "CANON_ES_PASSWD"
+	// EsEmpty ES_HOST变量为空
+	EsEmpty = "ES_HOST Can't Be Empty!"
 )
 
 type DB struct {
@@ -70,7 +71,7 @@ func GetDB() (*DB, error) {
 func returnElastic() (*elastic.Client, error) {
 	EsHost := os.Getenv("CANON_ES_HOME")
 	if EsHost == "" {
-		return nil, errors.New(util.EsEmpty)
+		return nil, errors.New(EsEmpty)
 	}
 
 	EsUser := os.Getenv("CANON_ES_USER")
@@ -205,18 +206,18 @@ func (d *DB) GetInfo() (vu.Video, error) {
 	termQuery := elastic.NewTermQuery("_id", d.ID)
 	searchResult, err := d.client.Search().
 		Index(d.index).
-		//Type(d.Ty).
+	//Type(d.Ty).
 		Query(termQuery).
 		Pretty(true).
 		Do(d.ctx)
 	if err != nil {
-		return vs, errors.New("Search ElasticSearch By Id Error. "+err.Error())
+		return vs, errors.New("Search ElasticSearch By Id Error. " + err.Error())
 	}
 
-	if searchResult.Hits.TotalHits >0{
-		for _, hit := range searchResult.Hits.Hits{
+	if searchResult.Hits.TotalHits > 0 {
+		for _, hit := range searchResult.Hits.Hits {
 			err = json.Unmarshal(*hit.Source, &vs)
-			if err != nil{
+			if err != nil {
 				return vs, err
 			}
 			break
@@ -235,13 +236,13 @@ func (d *DB) GetCZInfo() (vu.CZVideo, error) {
 		Pretty(true).
 		Do(d.ctx)
 	if err != nil {
-		return vs, errors.New("Search ElasticSearch By Id Error. "+err.Error())
+		return vs, errors.New("Search ElasticSearch By Id Error. " + err.Error())
 	}
 
-	if searchResult.Hits.TotalHits >0{
-		for _, hit := range searchResult.Hits.Hits{
+	if searchResult.Hits.TotalHits > 0 {
+		for _, hit := range searchResult.Hits.Hits {
 			err = json.Unmarshal(*hit.Source, &vs)
-			if err != nil{
+			if err != nil {
 				return vs, err
 			}
 			break
@@ -253,9 +254,9 @@ func (d *DB) GetCZInfo() (vu.CZVideo, error) {
 
 // GetCZSimilVideo 获取相似视频数据
 // chuizi 和 idou 的数据结构不同,必须设置index
-func (d *DB) GetCZSimilVideo(index, keys string)([]vu.CZVideo, error){
+func (d *DB) GetCZSimilVideo(index, keys string) ([]vu.CZVideo, error) {
 	var vs []vu.CZVideo
-	matchQuery := elastic.NewMatchQuery("keys",keys)
+	matchQuery := elastic.NewMatchQuery("keys", keys)
 	searchResult, err := d.client.Search().
 		Index(index).
 		Query(matchQuery).
@@ -264,17 +265,17 @@ func (d *DB) GetCZSimilVideo(index, keys string)([]vu.CZVideo, error){
 		Pretty(true).
 		Do(d.ctx)
 	if err != nil {
-		return vs, errors.New("Search ElasticSearch By Id Error. "+err.Error())
+		return vs, errors.New("Search ElasticSearch By Id Error. " + err.Error())
 	}
 
-	if searchResult.Hits.TotalHits >0{
-		for _, hit := range searchResult.Hits.Hits{
+	if searchResult.Hits.TotalHits > 0 {
+		for _, hit := range searchResult.Hits.Hits {
 			var v vu.CZVideo
 			err = json.Unmarshal(*hit.Source, &v)
-			if err != nil{
+			if err != nil {
 				return vs, err
 			}
-			if v.Name == keys{
+			if v.Name == keys {
 				continue
 			}
 			v.ID = hit.Id
@@ -316,6 +317,7 @@ func (d *DB) GetCZRandomData(index string) ([]vu.CZVideo, error) {
 
 	return vs, nil
 }
+
 // // SaveData 保存视频数据到ElasticSearch中
 // // vo Video结构体
 // func (d *DB) SaveData(vo util.Video) error {

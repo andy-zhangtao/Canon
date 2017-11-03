@@ -1,0 +1,22 @@
+{
+    "dependencies": {
+        "github.com/andy-zhangtao/crawlerparam": {
+            "branch": "master"
+        },
+        "github.com/andy-zhangtao/videocrawler": {
+            "branch": "master"
+        },
+        "github.com/julienschmidt/httprouter": {
+            "branch": "master"
+        },
+        "github.com/pkg/errors": {
+            "branch": "master"
+        },
+        "github.com/rs/cors": {
+            "branch": "master"
+        },
+        "gopkg.in/olivere/elastic.v5": {
+            "branch": "master"
+        }
+    }
+}

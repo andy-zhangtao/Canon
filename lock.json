@@ -1,0 +1,55 @@
+{
+    "memo": "dc8afa33395a05b64e259ebf02fe4e10fd8ab52b1e09febc45f72629e0d51897",
+    "projects": [
+        {
+            "name": "github.com/andy-zhangtao/crawlerparam",
+            "branch": "master",
+            "revision": "0f3a9a65d9b7a8c8dcdfbdc3326470c1d52de38e",
+            "packages": [
+                "v1"
+            ]
+        },
+        {
+            "name": "github.com/andy-zhangtao/videocrawler",
+            "branch": "master",
+            "revision": "3728729796786721cb0ba1c61f4b3c5e564fe78e",
+            "packages": [
+                "util"
+            ]
+        },
+        {
+            "name": "github.com/julienschmidt/httprouter",
+            "branch": "master",
+            "revision": "975b5c4c7c21c0e3d2764200bf2aa8e34657ae6e",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/pkg/errors",
+            "branch": "master",
+            "revision": "248dadf4e9068a0b3e79f02ed0a610d935de5302",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/rs/cors",
+            "branch": "master",
+            "revision": "eabcc6af4bbe5ad3a949d36450326a2b0b9894b8",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "gopkg.in/olivere/elastic.v5",
+            "branch": "master",
+            "revision": "edbef41beaacc2ee95e61af8faff04e67c01e268",
+            "packages": [
+                ".",
+                "config",
+                "uritemplates"
+            ]
+        }
+    ]
+}
