@@ -1,0 +1,269 @@
+swagger: '2.0'
+info:
+  description: This is ChuiZiNews API List
+  version: 1.0.0
+  title: ChuiZiNews
+  termsOfService: 'http://cznews.cc'
+  contact:
+    email: ztao@gmail.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+host: cznews.cc
+basePath: /v1
+tags:
+  - name: video
+    description: 视频操作API
+  - name: doc
+    description: 图文操作API
+schemes:
+  - http
+paths:
+  /connect:
+    get:
+      summary: 测试网络链接是否正常
+      description: ''
+      operationId: testing
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: 服务正常
+  /video/get:
+    get:
+      tags:
+        - video
+      summary: 获取播放地址
+      description: 对于CDN类视频，此API用来获取视频真实播放地址
+      produces:
+        - text/plain
+      parameters:
+        - name: url
+          in: query
+          description: 视频原始页面URL地址
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 地址获取成功
+          schema:
+            type: string
+            example: >-
+              http://cn-hbjz3-dx.acgvideo.com/vg8/0/e3/3965549-1-hd.mp4?expires=1507526400&platform=pc&ssig=qwzGdHIf6dJklgCPfEu6jQ&oi=1743518229&nfa=dqicF3m0tsCYAScRMi4sEg==&dynamic=1&hfa=2078920504&hfb=Yjk5ZmZjM2M1YzY4ZjAwYTMzMTIzYmIyNWY4ODJkNWI=
+        '400':
+          description: 地址获取失败
+  '/video/get/{chanid}/{time}':
+    get:
+      tags:
+        - video
+      summary: 获取指定视频
+      description: 获取指定频道在指定时间戳之后的视频
+      produces:
+        - application/json
+      parameters:
+        - name: chanid
+          in: path
+          description: 频道ID
+          required: true
+          type: string
+        - name: time
+          in: path
+          description: '时间戳,13位保留到毫秒'
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 获取成功
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Video'
+        '400':
+          description: 视频获取失败
+  '/video/random/get/{chanid}':
+    get:
+      tags:
+        - video
+      summary: 获取指定频道随机视频
+      description: '当前没有最新视频时,生成随机视频'
+      produces:
+        - application/json
+      parameters:
+        - name: chanid
+          in: path
+          description: 频道ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 获取成功
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Video'
+        '400':
+          description: 视频获取失败
+  '/doc/get/{chanid}/{time}':
+    get:
+      tags:
+        - doc
+      summary: 获取指定图文内容
+      description: 获取指定频道在指定时间戳之后的图文内容
+      produces:
+        - application/json
+      parameters:
+        - name: chanid
+          in: path
+          description: 频道ID
+          required: true
+          type: string
+        - name: time
+          in: path
+          description: '时间戳,13位保留到毫秒'
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 获取成功
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Doc'
+        '400':
+          description: 图文获取失败
+  '/doc/random/get/{chanid}':
+    get:
+      tags:
+        - doc
+      summary: 获取指定图文内容
+      description: 获取指定频道在指定时间戳之后的图文内容
+      produces:
+        - application/json
+      parameters:
+        - name: chanid
+          in: path
+          description: 频道ID
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 获取成功
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Doc'
+        '400':
+          description: 图文获取失败
+definitions:
+  Video:
+    type: object
+    properties:
+      id:
+        type: string
+        description: 视频ID
+        example: AV6oTVErtNSSeXcgS6uR
+      title:
+        type: string
+        description: 视频标题
+        example: '【天生吃货】沈城最丰盛的牛肚锅#1155'
+      desc:
+        type: string
+        description: 视频描述
+        example: >-
+          街边大排档？那已经是两个月前的事儿了，在如今秋意渐浓的沈阳城，午后、傍晚该到哪里吃顿舒心饭，喝点儿小白酒，唠唠知心嗑呢？现在该这家汤锅老店出牌了，两只招牌锅，一只骨汤香浓、食材丰盛，一只酱香醇美、块儿大肉多，辣炒杂贝和凉拌海螺当下酒小菜，自酿米露杯杯怡人，吃完一顿，保证你带着暖暖的胃、红扑扑的脸儿，想着啥时候再来呢！
+      url:
+        type: string
+        description: 视频播放地址
+        example: 'http://www.bilibili.com/video/av14685206/'
+      img:
+        type: string
+        description: 缩略图地址
+        example: >-
+          http://i1.hdslb.com/bfs/archive/fa9c2683457eb1f9b56349469197c11db4174de9.png
+      source:
+        type: integer
+        format: int32
+        description: 视频源
+        example: 3
+      keys:
+        type: string
+        description: '关键字列表,用于搜索相同类型内容'
+        example: '【天生吃货】沈城最丰盛的牛肚锅#1155'
+      upload:
+        type: integer
+        format: int64
+        description: 采集时间
+        example: 1506063425132
+      chanid:
+        type: integer
+        format: int32
+        description: 视频源频道ID
+        example: 76
+  Img:
+    type: object
+    properties:
+      url:
+        type: string
+        description: 图片地址
+        example: 'https://p3.pstatp.com/list/31890004addc023e643d'
+      width:
+        type: integer
+        format: int32
+        description: 图片宽度
+        example: 550
+      height:
+        type: integer
+        format: int32
+        description: 图片高度
+        example: 309
+  Doc:
+    type: object
+    properties:
+      id:
+        type: string
+        description: 图文ID
+        example: AV89g3TZkVipCCPiUJH_
+      title:
+        type: string
+        description: 图文标题
+        example: 隧道内剐蹭“理论”20分钟致7公里拥堵，吊销驾驶证不冤
+      desc:
+        type: string
+        description: 图文描述
+        example: >-
+          对“任性霸道者”予以重罚，这不仅是法律的刚性要求，也是对他人权益的真正负责。全文1014字，阅读约需2分钟(更多新闻，请关注新京报微信公号：bjnews_xjb)▲现场照片。图/广州日报在这个黄金周，高速公路车辆堵成长龙，已然成了一道“节日景观”。
+      url:
+        type: string
+        description: 素材地址
+      img:
+        type: string
+        description: 缩略图信息
+        example: https://p3.pstatp.com/list/402800029d7baf982cf3
+      source:
+        type: integer
+        format: int32
+        description: 图文源ID
+        example: 3
+      keys:
+        type: string
+        description: '关键字列表,用于搜索相同类型内容'
+        example: '交通事故,道路交通安全法,当事人,高速公路,任性霸道者,福州市'
+      upload:
+        type: integer
+        format: int64
+        description: 采集时间
+        example: 1506063425132
+      chanid:
+        type: integer
+        format: int32
+        description: 图文源频道ID
+        example: 76
+      isparsed:
+        type: boolean
+        description: 素材地址是否已经解析过.因为历史原因，当为true时表示已经解析过。 当为false时表示未解析
+        example: false
+externalDocs:
+  description: 频道ID及更多数据属性
+  url: 'https://bitbucket.org/andy-zhang/bado/wiki/Home'
