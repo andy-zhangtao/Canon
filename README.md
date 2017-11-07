@@ -38,7 +38,7 @@ Path|Description|Parameter|
 /video/simila | 根据指定关键字查询指定Index中的信息| Query Parameter: <br/><br/> keys(关键字url编码) <br/><br/> index(index名称)|
 /video/url | 获取视频真实播放地址 | Query Parameter: <br/><br/> url(原地址)|
 /doc/czdata/:chanid/:time|获取指定频道的新闻列表|URLParameter:<br/><br/>   chanid(频道ID) <br/>  time(时间戳, 13位保留到毫秒)|
-/doc/czrandom/get/:chanid|获取指定频道的新闻列表|URLParameter:<br/><br/> chanid(频道ID)|
+/doc/czrandom/:chanid|获取指定频道的新闻列表|URLParameter:<br/><br/> chanid(频道ID)|
 
 ### Support Platform
 
