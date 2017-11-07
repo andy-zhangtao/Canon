@@ -12,14 +12,15 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"github.com/andy-zhangtao/Canon/utils"
 	"strings"
+	"errors"
 )
 
 const (
 	CHANIDEMPTY    = "channel id cannot be empty!"
-	IDEMPTY = "video id cannot be empty!"
-	INDEXEMPTY = "index cannot be empty!"
-	KEYSEMPTY = "kyes cannot be empty!"
-	TYPESERROR = "type error!"
+	IDEMPTY        = "video id cannot be empty!"
+	INDEXEMPTY     = "index cannot be empty!"
+	KEYSEMPTY      = "kyes cannot be empty!"
+	TYPESERROR     = "type error!"
 	CHANIDNOTEXIST = "this channel does not exist!"
 	QUERYVIDEOERR  = "get video list failed!"
 	PARSEERROR     = "parse object failed!"
@@ -31,25 +32,15 @@ const (
 func (q *QueryService) GetVideoList(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	channelID := p.ByName("chanid")
 	if channelID == "" {
-		w.WriteHeader(ERROR)
-		fmt.Fprintf(w, CHANIDEMPTY)
+		returnError(errors.New(""), CHANIDEMPTY, w)
 		return
 	}
 
 	timestamp := p.ByName("time")
 	if timestamp == "" {
-		w.WriteHeader(ERROR)
-		fmt.Fprintf(w, TIMEEMPTY)
+		returnError(errors.New(""), TIMEEMPTY, w)
 		return
 	}
-
-	// chanMap := util.MakeChanMap()
-	// source := q.ChanMap[channelID]
-	// if source == nil {
-	// 	w.WriteHeader(ERROR)
-	// 	fmt.Fprintf(w, CHANIDNOTEXIST)
-	// 	return
-	// }
 
 	var sc v1.ChanSource
 	var vs []vu.Video
@@ -69,23 +60,11 @@ func (q *QueryService) GetVideoList(w http.ResponseWriter, r *http.Request, p ht
 
 	vs, err = q.ESClient.GetVideoRangeList()
 	if err != nil {
-		w.WriteHeader(ERROR)
-		log.Println(err.Error())
-		fmt.Fprintf(w, QUERYVIDEOERR)
+		returnError(err, QUERYVIDEOERR, w)
 		return
 	}
 
-	respon, err := json.Marshal(vs)
-	if err != nil {
-		w.WriteHeader(ERROR)
-		log.Println(err.Error())
-		fmt.Fprintf(w, PARSEERROR)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, string(respon))
-	return
+	returnResult(vs, w)
 }
 
 // GetRandomVideoList 获取随机视频列表
@@ -94,17 +73,9 @@ func (q *QueryService) GetRandomVideoList(w http.ResponseWriter, r *http.Request
 
 	channelID := p.ByName("chanid")
 	if channelID == "" {
-		w.WriteHeader(ERROR)
-		fmt.Fprintf(w, CHANIDEMPTY)
+		returnError(errors.New(""), CHANIDEMPTY, w)
 		return
 	}
-
-	// source := q.ChanMap[channelID]
-	// if source == nil {
-	// 	w.WriteHeader(ERROR)
-	// 	fmt.Fprintf(w, CHANIDNOTEXIST)
-	// 	return
-	// }
 
 	var sc v1.ChanSource
 	var vs []vu.Video
@@ -127,24 +98,12 @@ func (q *QueryService) GetRandomVideoList(w http.ResponseWriter, r *http.Request
 
 		vs, err = q.ESClient.GetRandomData()
 		if err != nil {
-			w.WriteHeader(ERROR)
-			log.Println(err.Error())
-			fmt.Fprintf(w, QUERYVIDEOERR)
+			returnError(err, QUERYVIDEOERR, w)
 			return
 		}
 	}
 
-	respon, err := json.Marshal(vs)
-	if err != nil {
-		w.WriteHeader(ERROR)
-		log.Println(err.Error())
-		fmt.Fprintf(w, PARSEERROR)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, string(respon))
-	return
+	returnResult(vs, w)
 }
 
 // GetVideoInfo 获取视频信息
@@ -152,8 +111,7 @@ func (q *QueryService) GetRandomVideoList(w http.ResponseWriter, r *http.Request
 func (q *QueryService) GetVideoInfo(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	ID := p.ByName("id")
 	if ID == "" {
-		w.WriteHeader(ERROR)
-		fmt.Fprintf(w, IDEMPTY)
+		returnError(errors.New(""), IDEMPTY, w)
 		return
 	}
 
@@ -164,23 +122,11 @@ func (q *QueryService) GetVideoInfo(w http.ResponseWriter, r *http.Request, p ht
 
 	vs, err = q.ESClient.GetInfo()
 	if err != nil {
-		w.WriteHeader(ERROR)
-		log.Println(err.Error())
-		fmt.Fprintf(w, QUERYVIDEOERR)
+		returnError(err, QUERYVIDEOERR, w)
 		return
 	}
 
-	respon, err := json.Marshal(vs)
-	if err != nil {
-		w.WriteHeader(ERROR)
-		log.Println(err.Error())
-		fmt.Fprintf(w, PARSEERROR)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	//fmt.Fprintf(w, string(respon))
-	w.Write(respon)
+	returnResult(vs, w)
 	return
 }
 
@@ -189,8 +135,7 @@ func (q *QueryService) GetVideoInfo(w http.ResponseWriter, r *http.Request, p ht
 func (q *QueryService) GetCZVideoInfo(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	ID := p.ByName("id")
 	if ID == "" {
-		w.WriteHeader(ERROR)
-		fmt.Fprintf(w, IDEMPTY)
+		returnError(errors.New(""), IDEMPTY, w)
 		return
 	}
 
@@ -201,40 +146,25 @@ func (q *QueryService) GetCZVideoInfo(w http.ResponseWriter, r *http.Request, p 
 
 	vs, err = q.ESClient.GetCZInfo()
 	if err != nil {
-		w.WriteHeader(ERROR)
-		log.Println(err.Error())
-		fmt.Fprintf(w, QUERYVIDEOERR)
+		returnError(err, QUERYVIDEOERR, w)
 		return
 	}
 
-	respon, err := json.Marshal(vs)
-	if err != nil {
-		w.WriteHeader(ERROR)
-		log.Println(err.Error())
-		fmt.Fprintf(w, PARSEERROR)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	//fmt.Fprintf(w, string(respon))
-	w.Write(respon)
-	return
+	returnResult(vs, w)
 }
 
 // GetCZSimilVideoInfo 获取相似视频信息
-func (q *QueryService) GetCZSimilVideoInfo(w http.ResponseWriter, r *http.Request, p httprouter.Params){
+func (q *QueryService) GetCZSimilVideoInfo(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	qu := r.URL.Query()
 	keys := qu.Get("keys")
-	if keys == ""{
-		w.WriteHeader(ERROR)
-		fmt.Fprintf(w, KEYSEMPTY)
+	if keys == "" {
+		returnError(errors.New(""), KEYSEMPTY, w)
 		return
 	}
 
 	index := qu.Get("index")
-	if index == ""{
-		w.WriteHeader(ERROR)
-		fmt.Fprintf(w, INDEXEMPTY)
+	if index == "" {
+		returnError(errors.New(""), INDEXEMPTY, w)
 		return
 	}
 
@@ -242,43 +172,30 @@ func (q *QueryService) GetCZSimilVideoInfo(w http.ResponseWriter, r *http.Reques
 	var vs []vu.CZVideo
 	var err error
 
-
-	vs, err = q.ESClient.GetCZSimilVideo(index,keys)
+	vs, err = q.ESClient.GetCZSimilVideo(index, keys)
 	if err != nil {
-		w.WriteHeader(ERROR)
-		log.Println(err.Error())
-		fmt.Fprintf(w, QUERYVIDEOERR)
+		returnError(errors.New(""), QUERYVIDEOERR, w)
 		return
 	}
 
-	respon, err := json.Marshal(vs)
-	if err != nil {
-		w.WriteHeader(ERROR)
-		log.Println(err.Error())
-		fmt.Fprintf(w, PARSEERROR)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(respon)
+	returnResult(vs, w)
 	return
 }
 
-
 // GetVideoPlayURL 获取视频真实播放地址
-func (q *QueryService) GetVideoPlayURL(w http.ResponseWriter, r *http.Request, p httprouter.Params){
+func (q *QueryService) GetVideoPlayURL(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	qu := r.URL.Query()
 	url := qu.Get("url")
-	if url == ""{
+	if url == "" {
 		w.WriteHeader(ERROR)
 		fmt.Fprintf(w, URLEMPTY)
 		return
 	}
 
-	if strings.Contains(url,"snssdk.com"){
-	//	头条数据
+	if strings.Contains(url, "snssdk.com") {
+		//	头条数据
 		vs, err := utils.TouTiao(url)
-		if err != nil{
+		if err != nil {
 			w.WriteHeader(ERROR)
 			fmt.Fprintf(w, err.Error())
 			return
@@ -297,10 +214,9 @@ func (q *QueryService) GetVideoPlayURL(w http.ResponseWriter, r *http.Request, p
 		return
 	}
 
-
-	if strings.Contains(url, "uczzd.cn"){
+	if strings.Contains(url, "uczzd.cn") {
 		vs, err := utils.UC(url)
-		if err != nil{
+		if err != nil {
 			w.WriteHeader(ERROR)
 			fmt.Fprintf(w, err.Error())
 			return
@@ -329,8 +245,7 @@ func (q *QueryService) GetCZRandomVideoList(w http.ResponseWriter, r *http.Reque
 
 	channelID := p.ByName("chanid")
 	if channelID == "" {
-		w.WriteHeader(ERROR)
-		fmt.Fprintf(w, CHANIDEMPTY)
+		returnError(errors.New(""), CHANIDEMPTY, w)
 		return
 	}
 
@@ -352,22 +267,28 @@ func (q *QueryService) GetCZRandomVideoList(w http.ResponseWriter, r *http.Reque
 
 		vs, err = q.ESClient.GetCZRandomData("chuizivideo")
 		if err != nil {
-			w.WriteHeader(ERROR)
-			log.Println(err.Error())
-			fmt.Fprintf(w, QUERYVIDEOERR)
+			returnError(err, QUERYVIDEOERR, w)
 			return
 		}
 	}
 
-	respon, err := json.Marshal(vs)
+	returnResult(vs, w)
+}
+
+func returnResult(o interface{}, w http.ResponseWriter) {
+	respon, err := json.Marshal(o)
 	if err != nil {
-		w.WriteHeader(ERROR)
-		log.Println(err.Error())
-		fmt.Fprintf(w, PARSEERROR)
+		returnError(err, PARSEERROR, w)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, string(respon))
+	w.Write(respon)
 	return
+}
+
+func returnError(err error, msg string, w http.ResponseWriter) {
+	w.WriteHeader(ERROR)
+	log.Println(err.Error())
+	fmt.Fprintf(w, msg)
 }

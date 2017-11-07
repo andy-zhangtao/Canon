@@ -95,6 +95,19 @@ func returnElastic() (*elastic.Client, error) {
 	return client, nil
 }
 
+
+// getResult 获取Elastic指定条件的数据
+func (d *DB) getResult(index, ty string, q elastic.Query)(*elastic.SearchResult, error){
+	return d.client.Search().
+		Index(index).
+		Type(ty).
+		Query(q).
+		From(0).
+		Size(10).
+		Pretty(true).
+		Do(d.ctx)
+}
+
 // GetVideoRangeList 获取指定时间戳之后的视频数据
 func (d *DB) GetVideoRangeList() ([]vu.Video, error) {
 	var vs []vu.Video
@@ -291,14 +304,7 @@ func (d *DB) GetCZSimilVideo(index, keys string) ([]vu.CZVideo, error) {
 func (d *DB) GetCZRandomData(index string) ([]vu.CZVideo, error) {
 	var vs []vu.CZVideo
 	q := elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewRandomFunction()).Boost(5).MaxBoost(10).BoostMode("multiply")
-	searchResult, err := d.client.Search().
-		Index(index).
-		Type(d.Ty).
-		Query(q).
-		From(0).
-		Size(10).
-		Pretty(true).
-		Do(d.ctx)
+	searchResult, err := d.getResult(index, d.Ty, q)
 	if err != nil {
 		return vs, errors.New("Search ElasticSearch Error. " + err.Error())
 	}
