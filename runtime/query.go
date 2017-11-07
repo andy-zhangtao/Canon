@@ -308,6 +308,43 @@ func (q *QueryService) GetCZRandomDocList(w http.ResponseWriter, r *http.Request
 	returnResult(vc, w)
 }
 
+func (q *QueryService) GetCZDocList(w http.ResponseWriter, r *http.Request, p httprouter.Params){
+	channelID := p.ByName("chanid")
+	if channelID == "" {
+		returnError(errors.New(""), CHANIDEMPTY, w)
+		return
+	}
+
+	timestamp := p.ByName("time")
+	if timestamp == "" {
+		returnError(errors.New(""), TIMEEMPTY, w)
+		return
+	}
+
+	var sc v1.ChanSource
+	var vs []interface{}
+	var err error
+
+	// sc = source[util.GetRandom(len(source))]
+	q.ESClient.Ty = channelID
+
+	var ncid []string
+	for _, i := range sc.CID {
+		ncid = append(ncid, strconv.Itoa(i))
+	}
+
+	// q.ESClient.Chanid = ncid
+
+	q.ESClient.TimeStamp = timestamp
+
+	vs, err = q.ESClient.GetCZData("chuizidoc",channelID,timestamp)
+	if err != nil {
+		returnError(err, QUERYVIDEOERR, w)
+		return
+	}
+
+	returnResult(vs, w)
+}
 func returnResult(o interface{}, w http.ResponseWriter) {
 	respon, err := json.Marshal(o)
 	if err != nil {

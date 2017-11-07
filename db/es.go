@@ -10,6 +10,7 @@ import (
 	vu "github.com/andy-zhangtao/videocrawler/util"
 
 	"gopkg.in/olivere/elastic.v5"
+	"github.com/andy-zhangtao/crawlerparam/v1"
 )
 
 const (
@@ -324,6 +325,35 @@ func (d *DB) GetCZRandomData(index string) ([]interface{}, error) {
 	return vs, nil
 }
 
+
+// GetCZData 获取指定时间戳之后的新闻数据
+// index 索引名称
+// ty 索引Type名称
+// timestamp 时间戳
+func (d *DB) GetCZData(index, ty, timestamp string)([]interface{}, error){
+	var vs []interface{}
+	q := elastic.NewBoolQuery()
+	q = q.Filter(elastic.NewRangeQuery("upload").Gt(timestamp).Lte("now"))
+	q = q.Boost(5)
+	searchResult, err := d.getResult(index, ty, q)
+	if err != nil {
+		return vs, errors.New("Search ElasticSearch Error. " + err.Error())
+	}
+
+	if searchResult.Hits.TotalHits > 0 {
+		for _, hit := range searchResult.Hits.Hits {
+			var v v1.Doc
+			err := json.Unmarshal(*hit.Source, &v)
+			if err != nil {
+				return vs, err
+			}
+			v.ID = hit.Id
+			vs = append(vs, v)
+		}
+	}
+
+	return vs, nil
+}
 // // SaveData 保存视频数据到ElasticSearch中
 // // vo Video结构体
 // func (d *DB) SaveData(vo util.Video) error {

@@ -4,7 +4,7 @@
         {
             "name": "github.com/andy-zhangtao/crawlerparam",
             "branch": "master",
-            "revision": "dd5f4581a22ed8b33f46863a2551490f76d9e07c",
+            "revision": "286efe8f8711855e29e4ca35ce6bded483405aa7",
             "packages": [
                 "v1"
             ]
