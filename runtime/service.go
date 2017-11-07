@@ -32,6 +32,8 @@ const (
 	GETCZSIMILVIDEOBYKEYS = "/video/simila"
 	// GETVIDEOURL 获取视频真实播放地址
 	GETVIDEOURL = "/video/url"
+	// GETCZRANDOMDOCLIST 获取指定频道的随机新闻数据
+	GETCZRANDOMDOCLIST = "/doc/czrandom/:chanid"
 	// SYNCPARAM 同步频道码参数
 	SYNCPARAM = "/sync/param"
 )
@@ -118,6 +120,7 @@ func (q *QueryService) Service() error {
 	router.GET(getAPIPath(GETVIDEOBYID), q.GetVideoInfo)
 	router.GET(getAPIPath(GETCZVIDEOBYID), q.GetCZVideoInfo)
 	router.GET(getAPIPath(GETCZSIMILVIDEOBYKEYS), q.GetCZSimilVideoInfo)
+	router.GET(getAPIPath(GETCZRANDOMDOCLIST),q.GetCZRandomDocList)
 	router.GET(getAPIPath(GETVIDEOURL), q.GetVideoPlayURL)
 	handler := cors.Default().Handler(router)
 	log.Fatal(http.ListenAndServe(":"+q.Port, handler))

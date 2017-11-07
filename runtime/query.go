@@ -23,6 +23,7 @@ const (
 	TYPESERROR     = "type error!"
 	CHANIDNOTEXIST = "this channel does not exist!"
 	QUERYVIDEOERR  = "get video list failed!"
+	QUERYDOCERROR  = "get doc list failed!"
 	PARSEERROR     = "parse object failed!"
 	TIMEEMPTY      = "timestamp cannot be empty!"
 )
@@ -250,7 +251,7 @@ func (q *QueryService) GetCZRandomVideoList(w http.ResponseWriter, r *http.Reque
 	}
 
 	var sc v1.ChanSource
-	var vs []vu.CZVideo
+	var vs []interface{}
 	var err error
 
 	for {
@@ -273,6 +274,38 @@ func (q *QueryService) GetCZRandomVideoList(w http.ResponseWriter, r *http.Reque
 	}
 
 	returnResult(vs, w)
+}
+
+func (q *QueryService) GetCZRandomDocList(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	channelID := p.ByName("chanid")
+	if channelID == "" {
+		returnError(errors.New(""), CHANIDEMPTY, w)
+		return
+	}
+
+	var sc v1.ChanSource
+	var vc []interface{}
+	var err error
+
+	for {
+		if len(vc) >= 10 {
+			break
+		}
+
+		q.ESClient.Ty = channelID
+		var ncid []string
+
+		for _, i := range sc.CID {
+			ncid = append(ncid, strconv.Itoa(i))
+		}
+
+		vc, err = q.ESClient.GetCZRandomData("chuizidoc")
+		if err != nil {
+			returnError(err, QUERYDOCERROR, w)
+			return
+		}
+	}
+	returnResult(vc, w)
 }
 
 func returnResult(o interface{}, w http.ResponseWriter) {

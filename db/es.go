@@ -301,8 +301,8 @@ func (d *DB) GetCZSimilVideo(index, keys string) ([]vu.CZVideo, error) {
 
 // GetRandomData 返回随机视频数据
 // 用于当前视频物料为空时
-func (d *DB) GetCZRandomData(index string) ([]vu.CZVideo, error) {
-	var vs []vu.CZVideo
+func (d *DB) GetCZRandomData(index string) ([]interface{}, error) {
+	var vs []interface{}
 	q := elastic.NewFunctionScoreQuery().AddScoreFunc(elastic.NewRandomFunction()).Boost(5).MaxBoost(10).BoostMode("multiply")
 	searchResult, err := d.getResult(index, d.Ty, q)
 	if err != nil {

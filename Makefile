@@ -4,7 +4,7 @@ export CANON_RUNTIME=CANON_RUNTIME_QUERY_SERVICE
 export CANON_RUNTIME_PORT=8080
 export CANON_YTBD_API=http://10.50.1.10:9191/api/info
 
-export CANON_ES_HOME=http://10.50.1.10:9200
+export CANON_ES_HOME=http://es.v2.yoo.yunpro.cn
 export CANON_ES_USER=elastic
 export CANON_ES_PASSWD=changeme
 
