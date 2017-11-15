@@ -96,15 +96,15 @@ func returnElastic() (*elastic.Client, error) {
 	return client, nil
 }
 
-
 // getResult 获取Elastic指定条件的数据
-func (d *DB) getResult(index, ty string, q elastic.Query)(*elastic.SearchResult, error){
+func (d *DB) getResult(index, ty string, q elastic.Query) (*elastic.SearchResult, error) {
 	return d.client.Search().
 		Index(index).
 		Type(ty).
 		Query(q).
 		From(0).
 		Size(10).
+		Sort("upload",false).
 		Pretty(true).
 		Do(d.ctx)
 }
@@ -123,6 +123,7 @@ func (d *DB) GetVideoRangeList() ([]vu.Video, error) {
 		Query(q).
 		From(0).
 		Size(10).
+		Sort("upload",false).
 		Pretty(true).
 		Do(d.ctx)
 	if err != nil {
@@ -325,12 +326,11 @@ func (d *DB) GetCZRandomData(index string) ([]interface{}, error) {
 	return vs, nil
 }
 
-
 // GetCZData 获取指定时间戳之后的新闻数据
 // index 索引名称
 // ty 索引Type名称
 // timestamp 时间戳
-func (d *DB) GetCZData(index, ty, timestamp string)([]interface{}, error){
+func (d *DB) GetCZData(index, ty, timestamp string) ([]interface{}, error) {
 	var vs []interface{}
 	q := elastic.NewBoolQuery()
 	q = q.Filter(elastic.NewRangeQuery("upload").Gt(timestamp).Lte("now"))
@@ -354,6 +354,7 @@ func (d *DB) GetCZData(index, ty, timestamp string)([]interface{}, error){
 
 	return vs, nil
 }
+
 // // SaveData 保存视频数据到ElasticSearch中
 // // vo Video结构体
 // func (d *DB) SaveData(vo util.Video) error {
