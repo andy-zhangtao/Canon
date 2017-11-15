@@ -17,7 +17,7 @@ import (
 
 const (
 	CHANIDEMPTY    = "channel id cannot be empty!"
-	IDEMPTY        = "video id cannot be empty!"
+	IDEMPTY        = "id cannot be empty!"
 	INDEXEMPTY     = "index cannot be empty!"
 	KEYSEMPTY      = "kyes cannot be empty!"
 	TYPESERROR     = "type error!"
@@ -340,6 +340,27 @@ func (q *QueryService) GetCZDocList(w http.ResponseWriter, r *http.Request, p ht
 	vs, err = q.ESClient.GetCZData("chuizidoc",channelID,timestamp)
 	if err != nil {
 		returnError(err, QUERYVIDEOERR, w)
+		return
+	}
+
+	returnResult(vs, w)
+}
+
+func (q *QueryService) GetCZDocInfo(w http.ResponseWriter, r *http.Request, p httprouter.Params){
+	channelID := p.ByName("chanid")
+	if channelID == ""{
+		returnError(errors.New(""), CHANIDEMPTY, w)
+	}
+
+	id := p.ByName("id")
+	if id == ""{
+		returnError(errors.New(""), IDEMPTY, w)
+	}
+	q.ESClient.Ty = channelID
+
+	vs, err := q.ESClient.GetCZDocInfo("chuizidoc", id)
+	if err != nil{
+		returnError(err, QUERYDOCERROR, w)
 		return
 	}
 

@@ -104,7 +104,7 @@ func (d *DB) getResult(index, ty string, q elastic.Query) (*elastic.SearchResult
 		Query(q).
 		From(0).
 		Size(10).
-		Sort("upload",false).
+		Sort("upload", false).
 		Pretty(true).
 		Do(d.ctx)
 }
@@ -123,7 +123,7 @@ func (d *DB) GetVideoRangeList() ([]vu.Video, error) {
 		Query(q).
 		From(0).
 		Size(10).
-		Sort("upload",false).
+		Sort("upload", false).
 		Pretty(true).
 		Do(d.ctx)
 	if err != nil {
@@ -324,6 +324,29 @@ func (d *DB) GetCZRandomData(index string) ([]interface{}, error) {
 	}
 
 	return vs, nil
+}
+
+// GetCZDocInfo 获取指定ID的新闻内容
+// index 索引名称
+func (d *DB) GetCZDocInfo(index, id string) (interface{}, error) {
+	q := elastic.NewTermQuery("_id", id)
+	searchResult, err := d.getResult(index, d.Ty, q)
+	if err != nil {
+		return nil, errors.New("Search ElasticSearch Error. " + err.Error())
+	}
+
+	var v v1.Doc
+	if searchResult.Hits.TotalHits > 0 {
+		for _, hit := range searchResult.Hits.Hits {
+			err := json.Unmarshal(*hit.Source, &v)
+			if err != nil {
+				return nil, err
+			}
+			break
+		}
+	}
+
+	return v, nil
 }
 
 // GetCZData 获取指定时间戳之后的新闻数据

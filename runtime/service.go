@@ -36,6 +36,8 @@ const (
 	GETCZRANDOMDOCLIST = "/doc/czrandom/:chanid"
 	// GETCZDOCLIST 获取指定频道指定时间戳之后的新闻数据
 	GETCZDOCLIST = "/doc/czdata/:chanid/:time"
+	// GetDocContent  获取指定ID的新闻内容
+	GetDocContent = "/doc/content/:chanid/:id"
 	// SYNCPARAM 同步频道码参数
 	SYNCPARAM = "/sync/param"
 )
@@ -125,6 +127,7 @@ func (q *QueryService) Service() error {
 	router.GET(getAPIPath(GETCZRANDOMDOCLIST), q.GetCZRandomDocList)
 	router.GET(getAPIPath(GETCZDOCLIST), q.GetCZDocList)
 	router.GET(getAPIPath(GETVIDEOURL), q.GetVideoPlayURL)
+	router.GET(getAPIPath(GetDocContent), q.GetCZDocInfo)
 	handler := cors.Default().Handler(router)
 	log.Fatal(http.ListenAndServe(":"+q.Port, handler))
 	return nil
